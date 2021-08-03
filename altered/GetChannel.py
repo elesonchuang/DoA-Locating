@@ -6,10 +6,12 @@ def get_Channel(interface, name):
     scan_process.wait()
     raw_output = raw_output.decode() 
     data = raw_output.split('\n')
-    #print('raw_output', type(raw_output), raw_output) 
+    print('raw_output', type(raw_output), raw_output) 
     for i in range(len(raw_output.split('\n'))):
         if data[i].endswith(name):
-            for m in range(-5,5):
-                if data[i-m].endswith('channel', 0,-2):
+            # print(data)
+            for m in range(8):
+                if data[i-m].startswith('freq',1):
                     return (data[i-m].split())[-1]
-    return len(raw_output.split('\n'))
+    return 0
+

@@ -30,10 +30,11 @@ def get_Channel(interface, name):
     #print('raw_output', type(raw_output), raw_output) 
     for i in range(len(raw_output.split('\n'))):
         if data[i].endswith(name):
-            for m in range(-5,5):
-                if data[i-m].endswith('channel', 0,-2):
+            # print(data)
+            for m in range(8):
+                if data[i-m].startswith('freq',1):
                     return (data[i-m].split())[-1]
-    return len(raw_output.split('\n'))
+    return 0
 
 def get_interface(station):
     scan_command = ['sudo','iw','dev']
