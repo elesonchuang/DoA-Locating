@@ -61,7 +61,7 @@ def on_connect(client, userdata, flags, rc):# The callback for when the client r
     
 def reversefunc(phi):
     #print('reversefunc')
-    data2 = pd.read_excel('/Users/chenfayu/Documents/@@台灣大學電機系＿三上專題研究/演算法/DoA-Locating/ground_truth.xlsx')
+    data2 = pd.read_excel('ground_truth.xlsx')
     x = np.linspace(0, 50, 51)
     y = data2.iloc[x, 2]
     f = interp1d(y, x, kind = 'linear', fill_value='extrapolate')  # radial basis function interpolator instance
