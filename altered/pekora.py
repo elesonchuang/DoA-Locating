@@ -26,16 +26,24 @@ print('interfaces', interface1, interface2)
 cnt = 0
 while cnt < 100:
     try:
-        signal1 = gura.get_Signal(interface1, freq, name)['signal']
-        signal2 = gura.get_Signal(interface2, freq, name)['signal']
+        data1 = gura.get_Signal(interface1, freq, name)
+        signal1 = float(data1['signal'])
+        interval1 = float(data1['interval'])
+        data2 = gura.get_Signal(interface2, freq, name)
+        signal2 = float(data2['signal'])
+        interval2 = float(data2['interval'])
+        if interval1>2000 or interval2>2000 :
+            print('overtime')
+            pass
         print('signal1: ',signal1)
         print('signal2: ',signal2)
         r = signal1 - signal2
         print('r: ', r)
         client.on_message = on_message
-        client.publish(MQTT_PATH, [r,signal2]) # return difference/sum ratio and the sum signal strength
+        payload = str(r) + '$' + str(signal2)
+        client.publish(MQTT_PATH, payload) # return difference/sum ratio and the sum signal strength
         client.loop_start()
         cnt = cnt + 1 
     except:
-        print('pass')
         pass
+        
