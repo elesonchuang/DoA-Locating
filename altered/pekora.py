@@ -6,7 +6,7 @@ def on_message(client, userdata, msg):
 
 base_number = int(input('which base is this: '))
 
-server_list = ["192.168.50.117", "192.168.50.60", "192.168.50.229"]	
+server_list = ["192.168.50.117", "192.168.50.31", "192.168.50.60"]	
 topic_list = ["temp0", "temp1", "temp2"]
 MQTT_SERVER = "192.168.50.117"#server_list[base_number] #specify the broker address
 MQTT_PATH = topic_list[base_number] #this is the name of topic, like temp
