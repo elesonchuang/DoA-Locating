@@ -24,8 +24,8 @@ ss0 = collections.deque(maxlen=1000)
 ss1 = collections.deque(maxlen=1000)
 ss2 = collections.deque(maxlen=1000)
 
-positionx = collections.deque(maxlen=1000)#for saving positioning data 
-positiony = collections.deque(maxlen=1000)
+position_x = collections.deque(maxlen=1000)#for saving positioning data 
+position_y = collections.deque(maxlen=1000)
 angleturn2 = 0
 angleturn3 = 0
 padding = 5
@@ -33,8 +33,8 @@ padding = 5
 ########################## inputs #############################################
 N = 3
 angleturn0 = 45#int(input('please input anchor0 angle turn:'))#input anchor0 angle turn
-angleturn1 = 45#int(input('please input anchor1 angle turn:'))#input anchor1 angle turn
-angleturn2 = 90#int(input('please input anchor2 angle turn:'))#input anchor2 angle turn
+angleturn1 = 180-50#int(input('please input anchor1 angle turn:'))#input anchor1 angle turn
+angleturn2 = 360-80#int(input('please input anchor2 angle turn:'))#input anchor2 angle turn
 
 x0, y0 = (0,0)#map(float, input('please input anchor0 position:').split())#input anchor0 Position
 x1, y1 = (3.6,0)#map(float, input('please input anchor1 position:').split())#input anchor1 Position
@@ -62,7 +62,6 @@ def on_message(client, userdata, msg):# The callback for when a PUBLISH message 
         payload = msg.payload.decode()
         ratio0.append(float(payload.split('$')[0]))
         ss0.append(float(payload.split('$')[1]))
-        print(ratio0)
     elif msg.topic == MQTT_PATH1:
         #print(msg.topic, msg.payload)
         payload = msg.payload.decode()
@@ -78,18 +77,14 @@ def on_message(client, userdata, msg):# The callback for when a PUBLISH message 
         ratio3.append(msg.payload[0])
 
 def animation(i):#animation fuction for positioning
-    positionx, positiony = lib_algo.positioning(Position, ratio0, ratio1, ratio2, ratio3, angleturn0, angleturn1, angleturn2, angleturn3, N, padding)
+    position_x, position_y = lib_algo.positioning(Position, ratio0, ratio1, ratio2, ratio3, angleturn0, angleturn1, angleturn2, angleturn3, N, padding)
+    position_x, position_y = lib_algo.delete_far_point(Position, far_list[i], position_x, position_y)
     global test_flag
-    while len(positionx) > 0 and len(positiony) > 0 :#and test_flag==0:
-        x = positionx.popleft()
-        y = positiony.popleft()
+    while len(position_x) > 0 and len(position_y) > 0 :#and test_flag==0:
+        x = position_x.popleft()
+        y = position_y.popleft()
         plt.scatter(x, y, s = 60, marker = '.', color = 'red', alpha = 1) 
     test_flag += 1
-        # with open(r'C:\Users\KOBE_NTU\Desktop\定位_2.csv', 'a') as csvw:
-        #     csvw.write( '%f'%x + ','+ '%f'%y +','+'\n')    
-    #else:
-        #print('angle not good')
-    #    pass
 
 client = receive.Client()#MQTT subscriber function
 client.connect(MQTT_SERVER, 1883, 60)
@@ -97,12 +92,12 @@ client.on_connect = on_connect
 client.on_message = on_message
 client.loop_start()
 
-
-while len(ratio0)+len(ratio1)+len(ratio2)<27:
+while len(ratio0)+len(ratio1)+len(ratio2)<297:
     print('report ratio0 len: ', len(ratio0))
     print('report ratio1 len: ', len(ratio1))
     print('report ratio2 len: ', len(ratio2))
     time.sleep(10)
+far_list = lib_algo.get_far_list(ss0, ss1, ss2)
 
 print('Start animate function !')
 total_x = 0

@@ -36,7 +36,7 @@ def GetCrossPoint(base1pos,slope1,base2pos,slope2):
     GetLinePara(line2)
     d = line1.a * line2.b - line2.a * line1.b
     p=Point()
-    if d == 0:
+    if d == 0: # invalid point
         p.x = -50
         p.y = -50
         return p
@@ -46,13 +46,13 @@ def GetCrossPoint(base1pos,slope1,base2pos,slope2):
 
 ##################################################################################################################################################
 
-def reversefunc(phi):
+def reversefunc(r):
     #print('reversefunc')
-    data2 = pd.read_excel('ground_truth.xlsx')
+    data = pd.read_excel('ground_truth.xlsx')
     x = np.linspace(0, 50, 51)
-    y = data2.iloc[x, 2]
+    y = data.iloc[x, 2]
     f = interp1d(y, x, kind = 'linear', fill_value='extrapolate')  # radial basis function interpolator instance
-    di = f(phi)
+    di = f(r)
     #print('angle blackbox',di)
     return di
 
@@ -112,8 +112,8 @@ def positioning(Position, ratio0, ratio1, ratio2, ratio3, angleturn0, angleturn1
         print('angle out of range')
         return [],[]
     
-    positionx = collections.deque(maxlen=1000)#for saving positioning data
-    positiony = collections.deque(maxlen=1000)
+    position_x = collections.deque(maxlen=1000)#for saving positioning data
+    position_y = collections.deque(maxlen=1000)
     for main_base in range(N-1): # base0 to 1 and 2
         for main_base_thetas in range(2):
             for other_bases in range(main_base+1,N):
@@ -123,9 +123,33 @@ def positioning(Position, ratio0, ratio1, ratio2, ratio3, angleturn0, angleturn1
                     if P_c.x > Position[1][0] or P_c.x < Position[0][0] or P_c.y > Position[2][1] or P_c.y < Position[0][1]:
                         pass
                     else:
-                        positionx.append(P_c.x)
-                        positiony.append(P_c.y)
+                        position_x.append(P_c.x)
+                        position_y.append(P_c.y)
 
-    return positionx, positiony
+    return position_x, position_y
 
+def get_far_list(ss0, ss1, ss2):
+    far_list = []
+    for i in range(min([len(ss0),len(ss1),len(ss2)])):
+        ss_list = [ss0[i], ss1[i], ss2[i]]
+        far_list.append(ss_list.index(min(ss_list)))
 
+    return far_list
+
+def delete_far_point(Position, far_base, position_x, position_y):
+    #dropout = len(position_x) // 3 # dropout 1/3 points in (posision_x,posision_y)
+    if len(position_x) > 3:
+        for i in reversed(range(len(position_x))):
+            d_to_0 = math.sqrt( (Position[0][0]-position_x[i])**2 + (Position[0][1]-position_y[i])**2 )
+            d_to_1 = math.sqrt( (Position[1][0]-position_x[i])**2 + (Position[1][1]-position_y[i])**2 )
+            d_to_2 = math.sqrt( (Position[2][0]-position_x[i])**2 + (Position[2][1]-position_y[i])**2 )
+            d_list = [d_to_0, d_to_1, d_to_2]
+            if d_list.index(min(d_list)) == far_base:
+                position_x.pop(i)
+                position_y.pop(i)
+        return position_x, position_y
+    else:
+        return position_x, position_y
+        
+
+    
