@@ -18,9 +18,9 @@ MQTT_PATH3 = "temp3"
 MQTTlist = [MQTT_PATH, MQTT_PATH1, MQTT_PATH2, MQTT_PATH3]
 password = "raspberry"
 
-ratio0 = collections.deque(maxlen=10000)
-ratio1 = collections.deque(maxlen=10000)
-ratio2 = collections.deque(maxlen=10000)
+ratio0 = collections.deque([-6,7,0,-3,-6,-5,3,41,-1,-1],maxlen=1000)#collections.deque(maxlen=10000)
+ratio1 = collections.deque([-6,7,0,-3,-6,-5,3,41,-1,-1],maxlen=1000)#collections.deque(maxlen=10000)
+ratio2 = collections.deque([-3,-6,1,-2,1,-1,1,-5,-4,-2],maxlen=1000)#collections.deque(maxlen=10000)
 ratio3 = collections.deque([],maxlen=10000)
 positionx = collections.deque(maxlen=10000)#for saving positioning data 
 positiony = collections.deque(maxlen=10000)
@@ -34,8 +34,8 @@ angleturn1 = 45#int(input('please input anchor1 angle turn:'))#input anchor1 ang
 angleturn2 = 90#int(input('please input anchor2 angle turn:'))#input anchor2 angle turn
 
 x0, y0 = (0,0)#map(float, input('please input anchor0 position:').split())#input anchor0 Position
-x1, y1 = (0.61*11,0)#map(float, input('please input anchor1 position:').split())#input anchor1 Position
-x2, y2 = (0.61*5.5,0.61*11)#map(float, input('please input anchor2 position:').split())#input anchor2 Position
+x1, y1 = (3.6,0)#map(float, input('please input anchor1 position:').split())#input anchor1 Position
+x2, y2 = (1.8,3.6)#map(float, input('please input anchor2 position:').split())#input anchor2 Position
 Position = ((x0, y0), (x1, y1), (x2, y2))
 print(Position)
 
@@ -199,13 +199,13 @@ def animation(i):#animation fuction for positioning
     #else:
         #print('angle not good')
     #    pass
-
+'''
 client = receive.Client()#MQTT subscriber function
 client.connect(MQTT_SERVER, 1883, 60)
 client.on_connect = on_connect
 client.on_message = on_message
 client.loop_start()
-
+'''
 while len(ratio0)+len(ratio1)+len(ratio2)<27:
     print('report ratio0 len: ', len(ratio0))
     print('report ratio1 len: ', len(ratio1))

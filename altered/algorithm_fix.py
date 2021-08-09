@@ -14,11 +14,18 @@ MQTT_PATH3 = "temp3"
 MQTTlist = [MQTT_PATH, MQTT_PATH1, MQTT_PATH2, MQTT_PATH3]
 password = "raspberry"
 
+test_mode = True#False
 # difference-sum ratio
-ratio0 = collections.deque(maxlen=1000)#collections.deque([-6,7,0,-3,-6,-5,3,41,-1,-1],maxlen=1000)#
-ratio1 = collections.deque(maxlen=1000)#collections.deque([-6,7,0,-3,-6,-5,3,41,-1,-1],maxlen=1000)#
-ratio2 = collections.deque(maxlen=1000)#collections.deque([-3,-6,1,-2,1,-1,1,-5,-4,-2],maxlen=1000)#
-ratio3 = collections.deque([],maxlen=1000)
+if test_mode == True:
+    ratio0 = collections.deque([-6,7,0,-3,-6,-5,3,41,-1,-1],maxlen=1000)#
+    ratio1 = collections.deque([-6,7,0,-3,-6,-5,3,41,-1,-1],maxlen=1000)#
+    ratio2 = collections.deque([-3,-6,1,-2,1,-1,1,-5,-4,-2],maxlen=1000)#
+    ratio3 = collections.deque([],maxlen=1000)
+else:
+    ratio0 = collections.deque(maxlen=1000)#
+    ratio1 = collections.deque(maxlen=1000)#
+    ratio2 = collections.deque(maxlen=1000)#
+    ratio3 = collections.deque(maxlen=1000)
 # sum signal strength
 ss0 = collections.deque(maxlen=1000)
 ss1 = collections.deque(maxlen=1000)
@@ -33,8 +40,8 @@ padding = 5
 ########################## inputs #############################################
 N = 3
 angleturn0 = 45#int(input('please input anchor0 angle turn:'))#input anchor0 angle turn
-angleturn1 = 180-50#int(input('please input anchor1 angle turn:'))#input anchor1 angle turn
-angleturn2 = 360-80#int(input('please input anchor2 angle turn:'))#input anchor2 angle turn
+angleturn1 = 45#180-50#int(input('please input anchor1 angle turn:'))#input anchor1 angle turn
+angleturn2 = 270#360-80#int(input('please input anchor2 angle turn:'))#input anchor2 angle turn
 
 x0, y0 = (0,0)#map(float, input('please input anchor0 position:').split())#input anchor0 Position
 x1, y1 = (3.6,0)#map(float, input('please input anchor1 position:').split())#input anchor1 Position
@@ -78,7 +85,7 @@ def on_message(client, userdata, msg):# The callback for when a PUBLISH message 
 
 def animation(i):#animation fuction for positioning
     position_x, position_y = lib_algo.positioning(Position, ratio0, ratio1, ratio2, ratio3, angleturn0, angleturn1, angleturn2, angleturn3, N, padding)
-    position_x, position_y = lib_algo.delete_far_point(Position, far_list[i], position_x, position_y)
+    #position_x, position_y = lib_algo.delete_far_point(Position, far_list[i], position_x, position_y)
     global test_flag
     while len(position_x) > 0 and len(position_y) > 0 :#and test_flag==0:
         x = position_x.popleft()
@@ -86,32 +93,51 @@ def animation(i):#animation fuction for positioning
         plt.scatter(x, y, s = 60, marker = '.', color = 'red', alpha = 1) 
     test_flag += 1
 
-client = receive.Client()#MQTT subscriber function
-client.connect(MQTT_SERVER, 1883, 60)
-client.on_connect = on_connect
-client.on_message = on_message
-client.loop_start()
+def realtime_animation(i):#animation fuction for positioning
+    position_x, position_y = lib_algo.realtime_positioning_random(Position, ratio0, ratio1, ratio2, ratio3, angleturn0, angleturn1, angleturn2, angleturn3, N, padding)
+    #position_x, position_y = lib_algo.delete_far_point(Position, far_list[i], position_x, position_y)
+    global test_flag
+    while len(position_x) > 0 and len(position_y) > 0 :#and test_flag==0:
+        x = position_x.popleft()
+        y = position_y.popleft()
+        plt.scatter(x, y, s = 60, marker = '.', color = 'red', alpha = 1) 
+    test_flag += 1
+    
+if test_mode == True:
+    print('running under testing mode')
+else:
+    print('start listening')
+    client = receive.Client() #MQTT subscriber function
+    client.connect(MQTT_SERVER, 1883, 60)
+    client.on_connect = on_connect
+    client.on_message = on_message
+    client.loop_start()
 
-while len(ratio0)+len(ratio1)+len(ratio2)<297:
-    print('report ratio0 len: ', len(ratio0))
-    print('report ratio1 len: ', len(ratio1))
-    print('report ratio2 len: ', len(ratio2))
-    time.sleep(10)
-far_list = lib_algo.get_far_list(ss0, ss1, ss2)
-
-print('Start animate function !')
 total_x = 0
 total_y = 0
 total_n = 0
 
 fig = plt.figure()
-ax = plt.axes(xlim=(left_BOARDER-20, right_BOARDER+20), ylim=(lower_BOARDER-20, upper_BOARDER+20))
-ani = FuncAnimation(fig, animation, interval=5) 
-time.sleep(5)
+ax = plt.axes(xlim=(left_BOARDER-1, right_BOARDER+1), ylim=(lower_BOARDER-1, upper_BOARDER+1))
 plt.scatter(y1/2, y1/2, s = 60, marker = '+', color = 'black', alpha = 1)
 plt.scatter(Position[0][0], Position[0][1], s = 400, marker = '*')
 plt.scatter(Position[1][0], Position[1][1], s = 400, marker = '*')
 plt.scatter(Position[2][0], Position[2][1], s = 400, marker = '*')
+
+while len(ratio0)+len(ratio1)+len(ratio2)<31:
+    print('report ratio0 len: ', len(ratio0))
+    print('report ratio1 len: ', len(ratio1))
+    print('report ratio2 len: ', len(ratio2))
+    far_list = lib_algo.get_far_list(ss0, ss1, ss2)
+    print('Start animate function !')
+    
+    ani = FuncAnimation(fig, realtime_animation, interval=5) 
+    plt.show()
+   
+    time.sleep(5)
+
+ani = FuncAnimation(fig, realtime_animation, interval=5)
+time.sleep(1)
 plt.gca().set_aspect('equal', adjustable='box')
 plt.grid()
 plt.xlabel('X(M)')

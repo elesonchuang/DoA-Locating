@@ -1,3 +1,4 @@
+from numpy.core.records import array
 from numpy.lib.function_base import angle
 import paho.mqtt.client as receive #import library
 import numpy as np
@@ -9,6 +10,7 @@ from matplotlib.animation import FuncAnimation
 from pandas.core.indexes import base
 from scipy.interpolate import interp1d
 import scipy
+import random
 
 class Point(object):
     x = 0
@@ -63,7 +65,7 @@ def getArray(Position, ratio, base_num, angleturn0, angleturn1, angleturn2):
         quit()
     dp_angle = reversefunc(ratio.popleft()) # displacement angle
     if dp_angle > 50:
-        print('base', base_num, 'angle miss')
+        #print('base', base_num, 'angle miss')
         angle_flag = False
         return ([], angle_flag)
     else:
@@ -151,5 +153,116 @@ def delete_far_point(Position, far_base, position_x, position_y):
     else:
         return position_x, position_y
         
+####################################################################################
+def realtime_getArray_random(Position, ratio, base_num, angleturn0, angleturn1, angleturn2):
+    slopearray = []
+    angleturn_switcher={
+        0: angleturn0,
+        1: angleturn1,
+        2: angleturn2
+        #3: angleturn3
+    }
+    rand_int = random.randint(0,len(ratio)-1)
+    dp_angle = reversefunc(ratio[rand_int]) # displacement angle
+    if dp_angle > 50:
+        print('base', base_num, 'angle miss')
+        angle_flag = False
+    else:
+        angle_flag = True
 
+    angleturn = angleturn_switcher.get(base_num,"Invalid base number")
+    UpperAngleLimit = angleturn + dp_angle
+    LowerAngleLimit = angleturn - dp_angle
+    upperSlope = math.tan(math.radians(UpperAngleLimit))
+    lowerSlope = math.tan(math.radians(LowerAngleLimit))
+    slopearray += [upperSlope, lowerSlope]
+    return slopearray, angle_flag
+
+def realtime_getArray(Position, ratio, base_num, angleturn0, angleturn1, angleturn2):
+    slopearray = []
+    angleturn_switcher={
+        0: angleturn0,
+        1: angleturn1,
+        2: angleturn2
+        #3: angleturn3
+    }
+    angle_flag = True
+    for i in range(len(ratio)):
+        dp_angle = reversefunc(ratio[i]) # displacement angle
+        if angle_flag == True:
+            if dp_angle > 50:
+                #print('base', base_num, 'angle miss')
+                angle_flag = False
+            else:
+                angle_flag = True
+
+        angleturn = angleturn_switcher.get(base_num,"Invalid base number")
+        UpperAngleLimit = angleturn + dp_angle
+        LowerAngleLimit = angleturn - dp_angle
+        upperSlope = math.tan(math.radians(UpperAngleLimit))
+        lowerSlope = math.tan(math.radians(LowerAngleLimit))
+        slopearray += [upperSlope, lowerSlope]
+    print('end')
+    return slopearray, angle_flag
+
+def realtime_positioning(Position, ratio0, ratio1, ratio2, ratio3, angleturn0, angleturn1, angleturn2, angleturn3, N, padding):   
+    slopearray0, angle_flag0 = realtime_getArray(Position, ratio0, 0, angleturn0, angleturn1, angleturn2)
+    slopearray1, angle_flag1 = realtime_getArray(Position, ratio1, 1, angleturn0, angleturn1, angleturn2)
+    slopearray2, angle_flag2 = realtime_getArray(Position, ratio2, 2, angleturn0, angleturn1, angleturn2)
+    '''
+    if angle_flag0 == False or angle_flag1 == False or angle_flag2 == False:
+        print('angle out of range')
+        return [],[]
+    '''
+    position_x = collections.deque(maxlen=10000)
+    position_y = collections.deque(maxlen=10000)
+    print('in')
+    for count_0 in range(len(slopearray0)):
+        for count_1 in range(len(slopearray1)):
+            for count_2 in range(len(slopearray2)):
+                position_x_add, position_y_add = GetCrossPoint_byslope(Position, slopearray0[count_0], slopearray1[count_1], slopearray2[count_2], N)
+                position_x += position_x_add
+                position_y += position_y_add
+                print(position_y_add)
+                print(position_x_add)
+    print(position_x)
+    return position_x, position_y 
+
+def realtime_positioning_random(Position, ratio0, ratio1, ratio2, ratio3, angleturn0, angleturn1, angleturn2, angleturn3, N, padding):#positioning algoritm by pseudoinverse_4 anchors    
+    slopearray0, angle_flag0 = realtime_getArray_random(Position, ratio0, 0, angleturn0, angleturn1, angleturn2)
+    slopearray1, angle_flag1 = realtime_getArray_random(Position, ratio1, 1, angleturn0, angleturn1, angleturn2)
+    slopearray2, angle_flag2 = realtime_getArray_random(Position, ratio2, 2, angleturn0, angleturn1, angleturn2)
+    slopearray = [slopearray0, slopearray1, slopearray2]
+    if angle_flag0 == False or angle_flag1 == False or angle_flag2 == False:
+        print('angle out of range (>50)')
+        return [],[]
     
+    position_x = collections.deque(maxlen=1000)#for saving positioning data
+    position_y = collections.deque(maxlen=1000)
+    for main_base in range(N-1): # base0 to 1 and 2
+        for main_base_thetas in range(2):
+            for other_bases in range(main_base+1,N):
+                for other_base_thetas in range(2):
+                    #print(Position[main_base],slopearray[main_base][main_base_thetas],Position[other_bases],slopearray[other_bases][other_base_thetas])
+                    P_c = GetCrossPoint(Position[main_base],slopearray[main_base][main_base_thetas],Position[other_bases],slopearray[other_bases][other_base_thetas])
+                    if P_c.x > Position[1][0] or P_c.x < Position[0][0] or P_c.y > Position[2][1] or P_c.y < Position[0][1]:
+                        pass
+                    else:
+                        position_x.append(P_c.x)
+                        position_y.append(P_c.y)
+
+    return position_x, position_y
+
+def GetCrossPoint_byslope(Position, slope0, slope1, slope2, N):
+    slopearray = [slope0, slope1, slope2]
+    position_x_add = collections.deque(maxlen=1000)
+    position_y_add = collections.deque(maxlen=1000)
+    for main_base in range(N-1):
+        for other_bases in range(main_base+1,N):
+            P_c = GetCrossPoint(Position[main_base],slopearray[main_base],Position[other_bases],slopearray[other_bases])
+            if P_c.x > Position[1][0] or P_c.x < Position[0][0] or P_c.y > Position[2][1] or P_c.y < Position[0][1]:
+                pass
+            else:
+                position_x_add.append(P_c.x)
+                position_y_add.append(P_c.y)
+    return position_x_add, position_y_add
