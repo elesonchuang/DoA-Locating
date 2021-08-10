@@ -17,9 +17,10 @@ password = "raspberry"
 test_mode = True#False
 # difference-sum ratio
 if test_mode == True:
-    ratio0 = collections.deque([-6,7,0,-3,-6,-5,3,41,-1,-1],maxlen=1000)#
-    ratio1 = collections.deque([-6,7,0,-3,-6,-5,3,41,-1,-1],maxlen=1000)#
-    ratio2 = collections.deque([-3,-6,1,-2,1,-1,1,-5,-4,-2],maxlen=1000)#
+    ratio0 = collections.deque([-2.0, -2.0, -2.0, -2.0, -6.0, -4.0, -4.0, -4.0, -4.0, -4.0, -4.0, -6.0, -4.0, -4.0, -4.0, -4.0, -4.0, -4.0, -4.0, -4.0], maxlen=1000)
+    ratio1 = collections.deque([-10.0, -14.0, -10.0, -12.0, -10.0, -14.0, -10.0, -10.0, -10.0, -10.0, -8.0, -8.0, -10.0, -10.0, -10.0, -10.0, -12.0, -10.0, -8.0, -8.0], maxlen=1000)
+    ratio2 = collections.deque([-16.0, -16.0, -14.0, -16.0, -14.0, -16.0, -18.0, -18.0, -18.0, -18.0, -18.0, -16.0, -16.0, -18.0, -18.0, -18.0, -18.0, -18.0, -16.0, -16.0], maxlen=1000)
+
     ratio3 = collections.deque([],maxlen=1000)
 else:
     ratio0 = collections.deque(maxlen=1000)#
@@ -40,8 +41,8 @@ padding = 5
 ########################## inputs #############################################
 N = 3
 angleturn0 = 45#int(input('please input anchor0 angle turn:'))#input anchor0 angle turn
-angleturn1 = 45#180-50#int(input('please input anchor1 angle turn:'))#input anchor1 angle turn
-angleturn2 = 270#360-80#int(input('please input anchor2 angle turn:'))#input anchor2 angle turn
+angleturn1 = 180-45#int(input('please input anchor1 angle turn:'))#input anchor1 angle turn
+angleturn2 = 360-90#int(input('please input anchor2 angle turn:'))#input anchor2 angle turn
 
 x0, y0 = (0,0)#map(float, input('please input anchor0 position:').split())#input anchor0 Position
 x1, y1 = (3.6,0)#map(float, input('please input anchor1 position:').split())#input anchor1 Position
@@ -101,6 +102,7 @@ def realtime_animation(i):#animation fuction for positioning
         x = position_x.popleft()
         y = position_y.popleft()
         plt.scatter(x, y, s = 60, marker = '.', color = 'red', alpha = 1) 
+    
     test_flag += 1
     
 if test_mode == True:
@@ -113,30 +115,27 @@ else:
     client.on_message = on_message
     client.loop_start()
 
-total_x = 0
-total_y = 0
-total_n = 0
-
 fig = plt.figure()
-ax = plt.axes(xlim=(left_BOARDER-1, right_BOARDER+1), ylim=(lower_BOARDER-1, upper_BOARDER+1))
-plt.scatter(y1/2, y1/2, s = 60, marker = '+', color = 'black', alpha = 1)
+ax = plt.axes(xlim=(left_BOARDER-10, right_BOARDER+10), ylim=(lower_BOARDER-10, upper_BOARDER+10))
+plt.scatter((Position[0][0]+Position[1][0]+Position[2][0]), (Position[0][1]+Position[1][1]+Position[2][1]), s = 60, marker = '+', color = 'black', alpha = 1)
 plt.scatter(Position[0][0], Position[0][1], s = 400, marker = '*')
 plt.scatter(Position[1][0], Position[1][1], s = 400, marker = '*')
 plt.scatter(Position[2][0], Position[2][1], s = 400, marker = '*')
 
-while len(ratio0)+len(ratio1)+len(ratio2)<31:
+time.sleep(1)
+count = 0
+while len(ratio0)+len(ratio1)+len(ratio2)<30 and len(ratio0)+len(ratio1)+len(ratio2)>0 :
     print('report ratio0 len: ', len(ratio0))
     print('report ratio1 len: ', len(ratio1))
     print('report ratio2 len: ', len(ratio2))
-    far_list = lib_algo.get_far_list(ss0, ss1, ss2)
-    print('Start animate function !')
-    
-    ani = FuncAnimation(fig, realtime_animation, interval=5) 
-    plt.show()
-   
+    #far_list = lib_algo.get_far_list(ss0, ss1, ss2)
+    #ani = FuncAnimation(fig, realtime_animation, interval=5) 
     time.sleep(5)
-
-ani = FuncAnimation(fig, realtime_animation, interval=5)
+print('ratio0:',ratio0)
+print('ratio1:',ratio1)
+print('ratio2:',ratio2)
+print('endloop')
+ani = FuncAnimation(fig, animation, interval=5)
 time.sleep(1)
 plt.gca().set_aspect('equal', adjustable='box')
 plt.grid()

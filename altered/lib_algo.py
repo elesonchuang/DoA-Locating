@@ -33,7 +33,8 @@ def GetLinePara(line):
 def GetCrossPoint(base1pos,slope1,base2pos,slope2):
     p1 = Point(base1pos[0],base1pos[1])
     p2 = Point(base2pos[0],base2pos[1])
-    line1, line2 = Line(p1,slope1), Line(p2,slope2)
+    line1 = Line(p1,slope1)
+    line2 = Line(p2,slope2)
     GetLinePara(line1)
     GetLinePara(line2)
     d = line1.a * line2.b - line2.a * line1.b
@@ -122,11 +123,15 @@ def positioning(Position, ratio0, ratio1, ratio2, ratio3, angleturn0, angleturn1
                 for other_base_thetas in range(2):
                     #print(Position[main_base],slopearray[main_base][main_base_thetas],Position[other_bases],slopearray[other_bases][other_base_thetas])
                     P_c = GetCrossPoint(Position[main_base],slopearray[main_base][main_base_thetas],Position[other_bases],slopearray[other_bases][other_base_thetas])
+                    position_x.append(P_c.x)
+                    position_y.append(P_c.y)
+                    '''
                     if P_c.x > Position[1][0] or P_c.x < Position[0][0] or P_c.y > Position[2][1] or P_c.y < Position[0][1]:
                         pass
                     else:
                         position_x.append(P_c.x)
                         position_y.append(P_c.y)
+                    '''
 
     return position_x, position_y
 
@@ -233,9 +238,11 @@ def realtime_positioning_random(Position, ratio0, ratio1, ratio2, ratio3, anglet
     slopearray1, angle_flag1 = realtime_getArray_random(Position, ratio1, 1, angleturn0, angleturn1, angleturn2)
     slopearray2, angle_flag2 = realtime_getArray_random(Position, ratio2, 2, angleturn0, angleturn1, angleturn2)
     slopearray = [slopearray0, slopearray1, slopearray2]
+    '''
     if angle_flag0 == False or angle_flag1 == False or angle_flag2 == False:
         print('angle out of range (>50)')
         return [],[]
+    '''
     
     position_x = collections.deque(maxlen=1000)#for saving positioning data
     position_y = collections.deque(maxlen=1000)
@@ -245,11 +252,15 @@ def realtime_positioning_random(Position, ratio0, ratio1, ratio2, ratio3, anglet
                 for other_base_thetas in range(2):
                     #print(Position[main_base],slopearray[main_base][main_base_thetas],Position[other_bases],slopearray[other_bases][other_base_thetas])
                     P_c = GetCrossPoint(Position[main_base],slopearray[main_base][main_base_thetas],Position[other_bases],slopearray[other_bases][other_base_thetas])
+                    position_x.append(P_c.x)
+                    position_y.append(P_c.y)
+                    '''
                     if P_c.x > Position[1][0] or P_c.x < Position[0][0] or P_c.y > Position[2][1] or P_c.y < Position[0][1]:
                         pass
                     else:
                         position_x.append(P_c.x)
                         position_y.append(P_c.y)
+                    '''
 
     return position_x, position_y
 
