@@ -26,9 +26,9 @@ class Line(object):
 
 def GetLinePara(line):
     # ax + by = c
-    line.a = -line.slope
+    line.a = -1 * line.slope
     line.b = 1
-    line.c = line.p.y - int(line.slope) * line.p.x
+    line.c = line.p.y + line.a * line.p.x
 
 def GetCrossPoint(base1pos,slope1,base2pos,slope2):
     p1 = Point(base1pos[0],base1pos[1])
@@ -38,13 +38,14 @@ def GetCrossPoint(base1pos,slope1,base2pos,slope2):
     GetLinePara(line1)
     GetLinePara(line2)
     d = line1.a * line2.b - line2.a * line1.b
-    p=Point()
+    p = Point()
     if d == 0: # invalid point
         p.x = -50
         p.y = -50
         return p
-    p.x = (line1.b * line2.c - line2.b * line1.c)*1.0 / d
-    p.y = (line1.c * line2.a - line2.c * line1.a)*1.0 / d
+    p.x = (line1.c * line2.b - line2.c * line1.b)*1.0 / d
+    p.y = (line1.a * line2.c - line2.a * line1.c)*1.0 / d
+    #print('point', ' x: ', p.x, ' y: ',p.y)
     return p
 
 ##################################################################################################################################################
@@ -123,6 +124,7 @@ def positioning(Position, ratio0, ratio1, ratio2, ratio3, angleturn0, angleturn1
                 for other_base_thetas in range(2):
                     #print(Position[main_base],slopearray[main_base][main_base_thetas],Position[other_bases],slopearray[other_bases][other_base_thetas])
                     P_c = GetCrossPoint(Position[main_base],slopearray[main_base][main_base_thetas],Position[other_bases],slopearray[other_bases][other_base_thetas])
+                    print(Position[main_base],slopearray[main_base][main_base_thetas],Position[other_bases],slopearray[other_bases][other_base_thetas])
                     position_x.append(P_c.x)
                     position_y.append(P_c.y)
                     '''

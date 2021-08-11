@@ -14,13 +14,13 @@ MQTT_PATH3 = "temp3"
 MQTTlist = [MQTT_PATH, MQTT_PATH1, MQTT_PATH2, MQTT_PATH3]
 password = "raspberry"
 
-test_mode = True#False
+test_mode = False
 # difference-sum ratio
 if test_mode == True:
-    ratio0 = collections.deque([-2.0, -2.0, -2.0, -2.0, -6.0, -4.0, -4.0, -4.0, -4.0, -4.0, -4.0, -6.0, -4.0, -4.0, -4.0, -4.0, -4.0, -4.0, -4.0, -4.0], maxlen=1000)
-    ratio1 = collections.deque([-10.0, -14.0, -10.0, -12.0, -10.0, -14.0, -10.0, -10.0, -10.0, -10.0, -8.0, -8.0, -10.0, -10.0, -10.0, -10.0, -12.0, -10.0, -8.0, -8.0], maxlen=1000)
-    ratio2 = collections.deque([-16.0, -16.0, -14.0, -16.0, -14.0, -16.0, -18.0, -18.0, -18.0, -18.0, -18.0, -16.0, -16.0, -18.0, -18.0, -18.0, -18.0, -18.0, -16.0, -16.0], maxlen=1000)
-
+    ratio0 = collections.deque([-6,7,0,-3,-6,-5,3,41,-1,-1],maxlen=1000)
+    ratio1 = collections.deque([-6,7,0,-3,-6,-5,3,41,-1,-1],maxlen=1000)
+    ratio2 = collections.deque([-3,-6,1,-2,1,-1,1,-5,-4,-2],maxlen=1000)
+    
     ratio3 = collections.deque([],maxlen=1000)
 else:
     ratio0 = collections.deque(maxlen=1000)#
@@ -41,8 +41,8 @@ padding = 5
 ########################## inputs #############################################
 N = 3
 angleturn0 = 45#int(input('please input anchor0 angle turn:'))#input anchor0 angle turn
-angleturn1 = 180-45#int(input('please input anchor1 angle turn:'))#input anchor1 angle turn
-angleturn2 = 360-90#int(input('please input anchor2 angle turn:'))#input anchor2 angle turn
+angleturn1 = 180-30#int(input('please input anchor1 angle turn:'))#input anchor1 angle turn
+angleturn2 = 360-80#int(input('please input anchor2 angle turn:'))#input anchor2 angle turn
 
 x0, y0 = (0,0)#map(float, input('please input anchor0 position:').split())#input anchor0 Position
 x1, y1 = (3.6,0)#map(float, input('please input anchor1 position:').split())#input anchor1 Position
@@ -95,14 +95,14 @@ def animation(i):#animation fuction for positioning
     test_flag += 1
 
 def realtime_animation(i):#animation fuction for positioning
+    print('realtime ani')
     position_x, position_y = lib_algo.realtime_positioning_random(Position, ratio0, ratio1, ratio2, ratio3, angleturn0, angleturn1, angleturn2, angleturn3, N, padding)
     #position_x, position_y = lib_algo.delete_far_point(Position, far_list[i], position_x, position_y)
     global test_flag
     while len(position_x) > 0 and len(position_y) > 0 :#and test_flag==0:
         x = position_x.popleft()
         y = position_y.popleft()
-        plt.scatter(x, y, s = 60, marker = '.', color = 'red', alpha = 1) 
-    
+        plt.scatter(x, y, s = 60, marker = '.', color = 'red', alpha = 1)     
     test_flag += 1
     
 if test_mode == True:
@@ -122,9 +122,9 @@ plt.scatter(Position[0][0], Position[0][1], s = 400, marker = '*')
 plt.scatter(Position[1][0], Position[1][1], s = 400, marker = '*')
 plt.scatter(Position[2][0], Position[2][1], s = 400, marker = '*')
 
-time.sleep(1)
+
 count = 0
-while len(ratio0)+len(ratio1)+len(ratio2)<30 and len(ratio0)+len(ratio1)+len(ratio2)>0 :
+while len(ratio0)+len(ratio1)+len(ratio2)<30 :
     print('report ratio0 len: ', len(ratio0))
     print('report ratio1 len: ', len(ratio1))
     print('report ratio2 len: ', len(ratio2))
