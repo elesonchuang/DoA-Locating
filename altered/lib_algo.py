@@ -125,15 +125,12 @@ def positioning(Position, ratio0, ratio1, ratio2, ratio3, angleturn0, angleturn1
                     #print(Position[main_base],slopearray[main_base][main_base_thetas],Position[other_bases],slopearray[other_bases][other_base_thetas])
                     P_c = GetCrossPoint(Position[main_base],slopearray[main_base][main_base_thetas],Position[other_bases],slopearray[other_bases][other_base_thetas])
                     print(Position[main_base],slopearray[main_base][main_base_thetas],Position[other_bases],slopearray[other_bases][other_base_thetas])
-                    position_x.append(P_c.x)
-                    position_y.append(P_c.y)
-                    '''
                     if P_c.x > Position[1][0] or P_c.x < Position[0][0] or P_c.y > Position[2][1] or P_c.y < Position[0][1]:
                         pass
                     else:
                         position_x.append(P_c.x)
                         position_y.append(P_c.y)
-                    '''
+                    
 
     return position_x, position_y
 

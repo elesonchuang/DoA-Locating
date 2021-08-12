@@ -14,13 +14,12 @@ MQTT_PATH3 = "temp3"
 MQTTlist = [MQTT_PATH, MQTT_PATH1, MQTT_PATH2, MQTT_PATH3]
 password = "raspberry"
 
-test_mode = False
+test_mode = True
 # difference-sum ratio
 if test_mode == True:
-    ratio0 = collections.deque([-6,7,0,-3,-6,-5,3,41,-1,-1],maxlen=1000)
-    ratio1 = collections.deque([-6,7,0,-3,-6,-5,3,41,-1,-1],maxlen=1000)
-    ratio2 = collections.deque([-3,-6,1,-2,1,-1,1,-5,-4,-2],maxlen=1000)
-    
+    ratio0 = collections.deque([-2.0, -2.0, -2.0, -2.0, -6.0, -4.0, -4.0, -4.0, -4.0, -4.0, -4.0, -6.0, -4.0, -4.0, -4.0, -4.0, -4.0, -4.0, -4.0, -4.0], maxlen=1000)
+    ratio1 = collections.deque([-10.0, -14.0, -10.0, -12.0, -10.0, -14.0, -10.0, -10.0, -10.0, -10.0, -8.0, -8.0, -10.0, -10.0, -10.0, -10.0, -12.0, -10.0, -8.0, -8.0], maxlen=1000)
+    ratio2 = collections.deque([-16.0, -16.0, -14.0, -16.0, -14.0, -16.0, -18.0, -18.0, -18.0, -18.0, -18.0, -16.0, -16.0, -18.0, -18.0, -18.0, -18.0, -18.0, -16.0, -16.0], maxlen=1000)
     ratio3 = collections.deque([],maxlen=1000)
 else:
     ratio0 = collections.deque(maxlen=1000)#
@@ -124,7 +123,7 @@ plt.scatter(Position[2][0], Position[2][1], s = 400, marker = '*')
 
 
 count = 0
-while len(ratio0)+len(ratio1)+len(ratio2)<30 :
+while len(ratio0)+len(ratio1)+len(ratio2)<60 :
     print('report ratio0 len: ', len(ratio0))
     print('report ratio1 len: ', len(ratio1))
     print('report ratio2 len: ', len(ratio2))
