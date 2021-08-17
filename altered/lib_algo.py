@@ -118,11 +118,15 @@ def positioning(Position, ratio0, ratio1, ratio2, ratio3, angleturn0, angleturn1
     position_x = collections.deque(maxlen=1000)#for saving positioning data
     position_y = collections.deque(maxlen=1000)
     for main_base in range(N-1): # base0 to 1 and 2
+        print('mainbase:',main_base)
         for main_base_thetas in range(2):
             for other_bases in range(main_base+1,N):
                 for other_base_thetas in range(2):
                     #print(Position[main_base],slopearray[main_base][main_base_thetas],Position[other_bases],slopearray[other_bases][other_base_thetas])
                     P_c = GetCrossPoint(Position[main_base],slopearray[main_base][main_base_thetas],Position[other_bases],slopearray[other_bases][other_base_thetas])
+
+                    print('main slope',slopearray[main_base])
+                    #print('other slope',slopearray[other_bases])
                     position_x.append(P_c.x)
                     position_y.append(P_c.y)
                     '''
