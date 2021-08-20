@@ -119,6 +119,7 @@ def positioning(Position, ratio0, ratio1, ratio2, ratio3, angleturn0, angleturn1
     position_x = collections.deque(maxlen=1000)#for saving positioning data
     position_y = collections.deque(maxlen=1000)
     for main_base in range(N-1): # base0 to 1 and 2
+        print('mainbase:',main_base)
         for main_base_thetas in range(2):
             for other_bases in range(main_base+1,N):
                 for other_base_thetas in range(2):
