@@ -8,7 +8,7 @@ import paho.mqtt.client as receive #import library
 
 # Open csv file
 
-total_portion = 90
+total_portion = 30
 each_portion = 180/total_portion
 sum_signal = 10
 diff_signal = 20

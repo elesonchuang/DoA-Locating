@@ -9,4 +9,35 @@ specifying target Wi-Fi freqency
 ![Wi-Fi band pic](https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/2.4_GHz_Wi-Fi_channels_%28802.11b%2Cg_WLAN%29.svg/660px-2.4_GHz_Wi-Fi_channels_%28802.11b%2Cg_WLAN%29.svg.png)
 
 
+# RPI:
+## to draw a new ground_truth.csv
+```bash
+sudo python /altered/RPI_servomotor.py
+```
+## to test whether servomotor works
+```bash
+sudo python /altered/RPI_servotest.py
+```
+## to start transmitting data
+```bash
+sudo python /altered/pekora.py
+```
+*** need to change the target wi-fi name!! ***
 
+## other file explaination
+gura.py : lib for pekora.py
+( including GetChannel.py, GetInterface.py, GetSignal.py )
+
+# COM:
+## to receive data and compute (main code)
+```bash
+sudo python /altered/algorithm_fix.py
+```
+## to visualize ground truth
+```bash
+sudo python /altered/plot_ground_truth.py
+```
+*** need to change the path of ground_truth file!! ***
+
+## other file explaination
+lib_algo.py : lib for algorithm_fix.py
