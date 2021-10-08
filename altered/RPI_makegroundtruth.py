@@ -26,7 +26,7 @@ servo1.start(0)
 
 
 base_number = int(input('which base is this: '))
-name = 'EEEEEE'#str(input('which Wi-Fi AP will you measure?'))
+name = 'allen'#str(input('which Wi-Fi AP will you measure?'))
 freq = gura.get_Channel('wlan0', name)
 print('target wifi SSID: ', name)
 print('target wifi freq: ', freq)

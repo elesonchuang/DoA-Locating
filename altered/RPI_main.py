@@ -13,7 +13,7 @@ MQTT_PATH = topic_list[base_number] #this is the name of topic, like temp
 print('initiating base{} with IP '.format(base_number), MQTT_SERVER)
 client = receive.Client()
 client.connect(MQTT_SERVER, 1883, 60)
-name = 'EEEEEE'#str(input('which Wi-Fi AP will you measure?'))
+name = 'allen'#str(input('which Wi-Fi AP will you measure?'))
 freq = gura.get_Channel('wlan0', name)
 
 print('target wifi SSID: ', name)
