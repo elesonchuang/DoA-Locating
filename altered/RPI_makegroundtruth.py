@@ -13,7 +13,7 @@ total_portion = 90
 each_portion = 180/total_portion
 sum_signal = 10
 diff_signal = 20
-angle = 0
+angle = 180
 record_angle = -90
 duty = angle/18 +2
 writer.writerow(["Phi [deg]","SUM","DIFF","DIFF-SUM"])
@@ -37,7 +37,7 @@ print('interfaces', interface1, interface2)
 
 servo1.ChangeDutyCycle(duty)
 
-while angle <= 180:
+while angle >= 0:
     l_signal1 = []
     l_signal2 = []
     l_r = []
@@ -67,8 +67,8 @@ while angle <= 180:
     avg_r = sum(l_r) / len(l_r)
     writer.writerow( [int(record_angle), diff_signal, sum_signal ,diff_signal - sum_signal] )
     #print('duty : ', duty)
-    angle += each_portion
-    record_angle += each_portion
+    angle -= each_portion
+    record_angle -= each_portion
     duty = angle/18 +2
     servo1.ChangeDutyCycle(duty)
     print('TURNING')
