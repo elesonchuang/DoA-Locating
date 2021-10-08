@@ -1,4 +1,4 @@
-import gura
+import RPI_library.gura as gura
 import paho.mqtt.client as receive #import library
 
 def on_message(client, userdata, msg):

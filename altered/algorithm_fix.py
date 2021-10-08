@@ -4,7 +4,7 @@ import collections, time
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-import lib_algo
+import COM_library.lib_algo as lib_algo
  
 MQTT_SERVER = "192.168.50.117" #specify the broker address, it can be IP of raspberry pi or simply localhost
 MQTT_PATH = "temp0" #this is the name of topic, like temp

@@ -3,11 +3,11 @@ import RPi.GPIO as GPIO
 import time
 import csv
 
-import gura
+import RPI_library.gura as gura
 import paho.mqtt.client as receive #import library
 
 # Open csv file
-f = open('ground_truth_new.csv', 'w')
+f = open('./ground_truths/ground_truth_new.csv', 'w')
 writer = csv.writer(f)
 total_portion = 90
 each_portion = 180/total_portion
