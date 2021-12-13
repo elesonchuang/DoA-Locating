@@ -3,7 +3,7 @@ from scipy.interpolate import interp1d
 import pandas as pd
 import numpy as np
 
-data = pd.read_csv('/Users/chenfayu/Documents/@@台灣大學電機系＿三上專題研究/演算法/DoA-Locating/altered/ground_truths/ground_truth_new1008-6_2.csv')
+data = pd.read_csv('/Users/chenfayu/Documents/@@台灣大學電機系＿三上專題研究/演算法/DoA-Locating/altered/ground_truths/ground_truth_new1022-2.csv')
 ############### parameters
 data_num = len(data) #number of data
 angle_portion = 180/(data_num-1) #angle of each turn

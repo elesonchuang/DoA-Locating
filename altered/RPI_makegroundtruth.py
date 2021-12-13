@@ -2,6 +2,7 @@
 import RPi.GPIO as GPIO
 import time
 import csv
+import numpy as np  #check if rpi has this module
 
 import RPI_library.gura as gura
 import paho.mqtt.client as receive #import library
@@ -9,7 +10,7 @@ import paho.mqtt.client as receive #import library
 # Open csv file
 f = open('./ground_truths/ground_truth_new.csv', 'w')
 writer = csv.writer(f)
-total_portion = 90
+total_portion = 10
 each_portion = 180/total_portion
 sum_signal = 10
 diff_signal = 20
@@ -51,7 +52,7 @@ while angle >= 0:
             interval2 = float(data2['interval'])
             if interval1>2000 or interval2>2000 :
                 print('overtime')
-                pass
+                continue
             print('signal1: ',signal1)
             print('signal2: ',signal2)
             r = signal1 - signal2
@@ -61,17 +62,23 @@ while angle >= 0:
             l_r.append(r)
         except:
             pass
-
+    '''find mean
     diff_signal = sum(l_signal1) / len(l_signal1)
     sum_signal = sum(l_signal2) / len(l_signal2)
     avg_r = sum(l_r) / len(l_r)
+    '''
+    #find median
+    diff_signal = np.median(l_signal1)
+    sum_signal = np.median(l_signal2)
+
     writer.writerow( [int(record_angle), diff_signal, sum_signal ,diff_signal - sum_signal] )
     #print('duty : ', duty)
     angle -= each_portion
     record_angle -= each_portion
     duty = angle/18 +2
-    servo1.ChangeDutyCycle(duty)
-    print('TURNING')
+    continue_flag = input("ready to turn to degree {} ?".format(angle))
+    #servo1.ChangeDutyCycle(duty)
+    print('TURNed')
     time.sleep(1)
 
 print("Finish duty cycle")
