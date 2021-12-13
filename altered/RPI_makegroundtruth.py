@@ -17,7 +17,7 @@ diff_signal = 20
 angle = 180
 record_angle = -90
 duty = angle/18 +2
-writer.writerow(["Phi [deg]","SUM","DIFF","DIFF-SUM"])
+writer.writerow(["Phi [deg]","SUM","DIFF","SUM-DIFF"])
 
 # motor setup
 GPIO.setmode(GPIO.BOARD) # Set GPIO numbering mode
@@ -31,8 +31,8 @@ name = 'allen'#str(input('which Wi-Fi AP will you measure?'))
 freq = gura.get_Channel('wlan0', name)
 print('target wifi SSID: ', name)
 print('target wifi freq: ', freq)
-interface1 = gura.get_interface(base_number)['difference'] # the difference one
-interface2 = gura.get_interface(base_number)['sum']       # the sum one
+interface1 = gura.get_interface(base_number)['sum'] # the difference one
+interface2 = gura.get_interface(base_number)['difference']       # the sum one
 #interface3 = 'wlan1' # the default one
 print('interfaces', interface1, interface2)
 
@@ -71,7 +71,7 @@ while angle >= 0:
     diff_signal = np.median(l_signal1)
     sum_signal = np.median(l_signal2)
 
-    writer.writerow( [int(record_angle), diff_signal, sum_signal ,diff_signal - sum_signal] )
+    writer.writerow( [int(record_angle), sum_signal, diff_signal ,sum_signal - diff_signal] )
     #print('duty : ', duty)
     angle -= each_portion
     record_angle -= each_portion
