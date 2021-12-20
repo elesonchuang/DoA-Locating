@@ -8,6 +8,7 @@ import statistics
 import plotly.graph_objects as go
 import plotly.express as px
 import statsmodels.api as sm
+from scipy.signal import savgol_filter
 
 ###########################################################################
 ################ generate reweight file  ##################################
@@ -83,6 +84,21 @@ def LOWESS_filter():
     fig.show() 
 
 ###########################################################################
+################ Savitzky-Golay filter  ###################################
+###########################################################################
+def SAVGOL_filter():
+    df = pd.read_csv('ground_truth_reweight.csv', encoding='utf-8')
+    x=df['Phi [deg]'].values 
+    y=df['SUM-DIFF'].values
+    y_filtered = savgol_filter(y, 49, 3)
+    fig = plt.figure()
+    ax = fig.subplots()
+    p = ax.plot(x, y, '-*', color="orange")
+    p, = ax.plot(x, y_filtered, 'g')
+    plt.subplots_adjust(bottom=0.25)
+    plt.show()
+
+###########################################################################
 ################ main function  ###########################################
 ###########################################################################
 def main():
@@ -91,6 +107,10 @@ def main():
         print("START GENERATION: weighted_power= ",weighted_power )
         OUTPUT_writter(weighted_power)
     #CSV_plotter(pd.read_csv('ground_truth_reweight.csv'))
-    LOWESS_filter()
+    chosen_filter=input("WHICH FILTER WHOULD YOU WANT TO APPLY?\n  [1]Lowess filter\n  [2]Savitzky-Golay filter\n YOUR CHOICE: ")
+    if chosen_filter=="1":
+        LOWESS_filter()
+    elif chosen_filter=="2":
+        SAVGOL_filter()
 
 main()
