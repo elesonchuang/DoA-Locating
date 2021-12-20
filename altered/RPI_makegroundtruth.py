@@ -2,6 +2,7 @@
 import RPi.GPIO as GPIO
 import time
 import csv
+import numpy as np  #check if rpi has this module
 
 import RPI_library.gura as gura
 import paho.mqtt.client as receive #import library
@@ -12,7 +13,7 @@ f_sum = open('./ground_truths/ground_truth_sum.csv', 'w')
 f_diff = open('./ground_truths/ground_truth_diff.csv', 'w')
 f_ratio = open('./ground_truths/ground_truth_ratio.csv', 'w')
 writer = csv.writer(f)
-total_portion = 90
+total_portion = 10
 each_portion = 180/total_portion
 sum_signal = 10
 diff_signal = 20
@@ -20,9 +21,11 @@ angle = 0
 record_angle = -90
 duty = angle/18 +2
 writer.writerow(["Phi [deg]","SUM","DIFF","SUM-DIFF"])
+
 f_sum.write("Phi [deg],data\n")
 f_diff.write("Phi [deg],data\n")
 f_ratio.write("Phi [deg],data\n")
+
 # motor setup
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD) # Set GPIO numbering mode
@@ -34,11 +37,13 @@ servo1.start(0)
 base_number = int(input('which base is this: '))
 name = 'EEEEEE'#str(input('which Wi-Fi AP will you measure?'))
 freq = gura.get_Channel('wlan0', name)
+
 while freq == 0:
     time.sleep(5)
     freq = gura.get_Channel('wlan0', name)
     print('target wifi SSID: ', name)
     print('target wifi freq: ', freq)
+
 interface1 = gura.get_interface(base_number)['sum'] # the difference one
 interface2 = gura.get_interface(base_number)['difference']       # the sum one
 #interface3 = 'wlan1' # the default one
@@ -100,6 +105,7 @@ while angle <= 180:
     # input()
     # time.sleep(1)
     print('Now turn to %.2f degree' %angle)
+
 print("Finish duty cycle")
 #Clean things up at the end
 servo1.ChangeDutyCycle(2 + 0)
