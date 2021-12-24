@@ -44,7 +44,7 @@ def get_interface(station):
     raw_output = raw_output.decode() 
     data = raw_output.split('\n')
     interface = {} #create return dictionary
-    macs = ['32:6d','79:c0','75:81','32:6d','35:98','31:9b']
+    macs = ['32:6d','79:c0','75:81','32:f7','35:98','31:9b']
            #  sum   / diff  / sum   / diff  / sum   / diff
     # index 0,1 --> Rpi0    index 2,3 --> Rpi1  index 4,5 --> Rpi2
     # print('raw_output', type(raw_output), raw_output) 
