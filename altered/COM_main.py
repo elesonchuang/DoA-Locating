@@ -14,7 +14,8 @@ MQTT_PATH3 = "temp3"
 MQTTlist = [MQTT_PATH, MQTT_PATH1, MQTT_PATH2, MQTT_PATH3]
 password = "raspberry"
 
-test_mode = False#True
+txt_index=input('txt file index: ')# 0
+test_mode =True
 # difference-sum ratio
 if test_mode == True:
     ratio0 = collections.deque([-2.0, -2.0, -2.0, -2.0, -6.0, -4.0, -4.0, -4.0, -4.0, -4.0, -4.0, -6.0, -4.0, -4.0, -4.0, -4.0, -4.0, -4.0, -4.0, -4.0], maxlen=1000)
@@ -67,18 +68,21 @@ def on_message(client, userdata, msg):# The callback for when a PUBLISH message 
     if msg.topic == MQTT_PATH:
         #print(msg.topic, msg.payload)
         payload = msg.payload.decode()
-        ratio0.append(float(payload.split('$')[0]))
-        ss0.append(float(payload.split('$')[1]))
+        if(len(ratio0)<20):
+            ratio0.append(float(payload.split('$')[0]))
+            ss0.append(float(payload.split('$')[1]))
     elif msg.topic == MQTT_PATH1:
         #print(msg.topic, msg.payload)
         payload = msg.payload.decode()
-        ratio1.append(float(payload.split('$')[0]))
-        ss1.append(float(payload.split('$')[1]))
+        if(len(ratio1)<20):
+            ratio1.append(float(payload.split('$')[0]))
+            ss1.append(float(payload.split('$')[1]))
     elif msg.topic == MQTT_PATH2:
         #print(msg.topic, msg.payload)
         payload = msg.payload.decode() 
-        ratio2.append(float(payload.split('$')[0]))
-        ss2.append(float(payload.split('$')[1]))
+        if(len(ratio2)<20):
+            ratio2.append(float(payload.split('$')[0]))
+            ss2.append(float(payload.split('$')[1]))
     elif msg.topic == MQTT_PATH3:
         # print(msg.topic, msg.payload)
         ratio3.append(msg.payload[0])
@@ -114,13 +118,13 @@ else:
     client.on_message = on_message
     client.loop_start()
 
-fig = plt.figure()
-ax = plt.axes(xlim=(left_BOARDER-10, right_BOARDER+10), ylim=(lower_BOARDER-10, upper_BOARDER+10))
-plt.scatter((Position[0][0]+Position[1][0]+Position[2][0]), (Position[0][1]+Position[1][1]+Position[2][1]), s = 60, marker = '+', color = 'black', alpha = 1)
-plt.scatter(Position[0][0], Position[0][1], s = 400, marker = '*')
-plt.scatter(Position[1][0], Position[1][1], s = 400, marker = '*')
-plt.scatter(Position[2][0], Position[2][1], s = 400, marker = '*')
-
+# fig = plt.figure()
+# ax = plt.axes(xlim=(left_BOARDER-10, right_BOARDER+10), ylim=(lower_BOARDER-10, upper_BOARDER+10))
+# plt.scatter((Position[0][0]+Position[1][0]+Position[2][0]), (Position[0][1]+Position[1][1]+Position[2][1]), s = 60, marker = '+', color = 'black', alpha = 1)
+# plt.scatter(Position[0][0], Position[0][1], s = 400, marker = '*')
+# plt.scatter(Position[1][0], Position[1][1], s = 400, marker = '*')
+# plt.scatter(Position[2][0], Position[2][1], s = 400, marker = '*')
+# ani = FuncAnimation(fig, animation, interval=5)
 
 count = 0
 while len(ratio0)+len(ratio1)+len(ratio2)<60 :
@@ -133,11 +137,29 @@ while len(ratio0)+len(ratio1)+len(ratio2)<60 :
 print('ratio0:',ratio0)
 print('ratio1:',ratio1)
 print('ratio2:',ratio2)
-print('endloop')
-ani = FuncAnimation(fig, animation, interval=5)
-time.sleep(1)
-plt.gca().set_aspect('equal', adjustable='box')
-plt.grid()
-plt.xlabel('X(M)')
-plt.ylabel('Y(M)')
-plt.show()
+with open('0107_location_data/dataset{}.txt'.format(txt_index), 'w') as f:
+    f.write('rcv base0 position: ({},{})'.format(x0, y0))
+    f.write('\n')
+    f.write('rcv base0 angle: {}'.format(angleturn0))
+    f.write('\n')
+    f.write(str(ratio0))
+    f.write('\n\n')
+    f.write('rcv base1 position: ({},{})'.format(x1, y1))
+    f.write('\n')
+    f.write('rcv base1 angle: {}'.format(angleturn1))
+    f.write('\n')
+    f.write(str(ratio1))
+    f.write('\n\n')
+    f.write('rcv base2 position: ({},{})'.format(x2, y2))
+    f.write('\n')
+    f.write('rcv base2 angle: {}'.format(angleturn2))
+    f.write('\n')
+    f.write(str(ratio2))
+    f.write('\n\n')
+
+# time.sleep(1)
+# plt.gca().set_aspect('equal', adjustable='box')
+# plt.grid()
+# plt.xlabel('X(M)')
+# plt.ylabel('Y(M)')
+# plt.show()
